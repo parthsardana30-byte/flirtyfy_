@@ -156,9 +156,9 @@ export default function ChatInterface({ character }: { character: Character }) {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-3xl mx-auto w-full bg-zinc-950 relative shadow-2xl sm:border-x sm:border-white/5">
+    <div className="flex flex-col h-full max-w-3xl mx-auto w-full bg-transparent relative shadow-2xl sm:border-x sm:border-white/5">
       {/* Chat Header */}
-      <header className="flex items-center justify-between px-4 py-3 bg-zinc-900/80 backdrop-blur-md border-b border-white/10 z-10 sticky top-0">
+      <header className="flex items-center justify-between px-4 py-3 bg-zinc-950/60 backdrop-blur-xl border-b border-white/10 z-10 sticky top-0">
         <div className="flex items-center gap-3">
           <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors text-zinc-400 hover:text-white">
             <ArrowLeft className="w-5 h-5" />
@@ -304,7 +304,7 @@ export default function ChatInterface({ character }: { character: Character }) {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-zinc-950 border-t border-white/10">
+      <div className="p-4 bg-zinc-950/60 backdrop-blur-xl border-t border-white/10">
         <form 
           onSubmit={(e) => { e.preventDefault(); handleSend(); }}
           className="flex items-end gap-2 bg-zinc-900 border border-white/10 rounded-3xl p-1.5 pl-4 focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all"
