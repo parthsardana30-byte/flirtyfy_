@@ -57,27 +57,27 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-4 flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-16">
-      {/* Friends Button - Left Side on Desktop, Top on Mobile */}
-      <div className="flex justify-center md:justify-end order-2 md:order-1 w-full md:w-auto">
+    <div className="w-full max-w-sm mx-auto mt-4 flex flex-col items-center">
+      {/* Friends Button - Above the card */}
+      <div className="mb-6 w-full flex justify-center">
         <Link 
           href="/matches" 
-          className="flex flex-row md:flex-col items-center gap-3 md:gap-4 bg-zinc-900 border border-white/10 px-6 py-3 md:px-8 md:py-8 rounded-2xl text-pink-500 hover:bg-zinc-800 transition-all shadow-xl hover:scale-105 active:scale-95"
+          className="flex items-center gap-3 bg-zinc-900 border border-white/10 px-6 py-3 rounded-2xl text-pink-500 hover:bg-zinc-800 transition-all shadow-xl hover:scale-105 active:scale-95"
         >
           <div className="relative">
-            <Users className="w-6 h-6 md:w-10 md:h-10" />
+            <Users className="w-6 h-6" />
             {matchCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md">
+              <span className="absolute -top-2 -right-2 bg-pink-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-md">
                 {matchCount}
               </span>
             )}
           </div>
-          <span className="font-bold text-lg md:text-xl tracking-wide">Friends</span>
+          <span className="font-bold text-lg tracking-wide">Friends</span>
         </Link>
       </div>
 
       {/* Swipe Card - Center */}
-      <div className="relative w-full max-w-sm h-[550px] flex items-center justify-center order-1 md:order-2 shrink-0">
+      <div className="relative w-full h-[550px] flex items-center justify-center shrink-0">
         <AnimatePresence>
           <Card 
             key={activeCharacter.id}
@@ -100,14 +100,6 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
           >
             <Heart className="w-8 h-8 fill-current" />
           </button>
-        </div>
-      </div>
-      
-      {/* Empty div for balance on desktop */}
-      <div className="hidden md:block order-3 w-full md:w-auto invisible">
-        <div className="px-8 py-8">
-          <Users className="w-10 h-10" />
-          <span>Friends</span>
         </div>
       </div>
     </div>
