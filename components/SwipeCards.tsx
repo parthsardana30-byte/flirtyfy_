@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
 import Image from 'next/image';
 import { Character } from '@/lib/characters';
-import { Heart, X } from 'lucide-react';
+import { Heart, X, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { addMatch } from '@/lib/storage';
+import Link from 'next/link';
 
 export default function SwipeCards({ characters }: { characters: Character[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -15,10 +17,9 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
 
   const handleSwipe = (direction: 'left' | 'right') => {
     if (direction === 'right' && activeCharacter) {
-      router.push(`/chat/${activeCharacter.id}`);
-    } else {
-      setCurrentIndex((prev) => (prev + 1) % characters.length);
+      addMatch(activeCharacter.id);
     }
+    setCurrentIndex((prev) => (prev + 1) % characters.length);
   };
 
   if (!activeCharacter) {
@@ -37,6 +38,15 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
 
   return (
     <div className="relative w-full max-w-sm mx-auto h-[550px] flex items-center justify-center mt-4">
+      {/* Friends Button overlaying the card */}
+      <Link 
+        href="/matches" 
+        className="absolute top-4 left-4 z-50 flex items-center gap-2 bg-zinc-900/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-pink-500 hover:bg-zinc-800 transition-colors shadow-xl hover:scale-105 active:scale-95"
+      >
+        <Users className="w-5 h-5" />
+        <span className="font-medium text-sm">Friends</span>
+      </Link>
+
       <AnimatePresence>
         <Card 
           key={activeCharacter.id}

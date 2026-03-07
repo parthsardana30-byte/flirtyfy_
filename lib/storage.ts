@@ -21,3 +21,18 @@ export const clearChatHistory = (characterId: string) => {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(`chat_${characterId}`);
 };
+
+export const getMatches = (): string[] => {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem('matches');
+  return stored ? JSON.parse(stored) : [];
+};
+
+export const addMatch = (characterId: string) => {
+  if (typeof window === 'undefined') return;
+  const matches = getMatches();
+  if (!matches.includes(characterId)) {
+    matches.push(characterId);
+    localStorage.setItem('matches', JSON.stringify(matches));
+  }
+};
