@@ -18,20 +18,30 @@ export default function ChatInterface({ character }: { character: Character }) {
 
   // Initialize chat history
   useEffect(() => {
-    const history = getChatHistory(character.id);
-    if (history.length === 0) {
-      // Add greeting if no history
-      const initialMessage: Message = {
-        id: Date.now().toString(),
-        role: 'model',
-        text: character.greeting,
-        timestamp: Date.now(),
-      };
-      setMessages([initialMessage]);
-      saveChatHistory(character.id, [initialMessage]);
-    } else {
-      setMessages(history);
-    }
+    const initChat = async () => {
+      const { auth } = await import('@/lib/auth');
+      const user = await auth.getCurrentUser();
+      if (!user) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const history = await getChatHistory(character.id);
+      if (history.length === 0) {
+        // Add greeting if no history
+        const initialMessage: Message = {
+          id: Date.now().toString(),
+          role: 'model',
+          text: character.greeting,
+          timestamp: Date.now(),
+        };
+        setMessages([initialMessage]);
+        await saveChatHistory(character.id, [initialMessage]);
+      } else {
+        setMessages(history);
+      }
+    };
+    initChat();
   }, [character.id, character.greeting]);
 
   // Auto-scroll to bottom
@@ -54,7 +64,7 @@ export default function ChatInterface({ character }: { character: Character }) {
 
     const updatedMessages = [...messages, newUserMessage];
     setMessages(updatedMessages);
-    saveChatHistory(character.id, updatedMessages);
+    await saveChatHistory(character.id, updatedMessages);
     setIsTyping(true);
 
     try {
@@ -104,7 +114,7 @@ export default function ChatInterface({ character }: { character: Character }) {
       }
 
       // Save final state
-      saveChatHistory(character.id, [...updatedMessages, {
+      await saveChatHistory(character.id, [...updatedMessages, {
         id: modelMessageId,
         role: 'model',
         text: fullResponse,
@@ -126,8 +136,8 @@ export default function ChatInterface({ character }: { character: Character }) {
     }
   };
 
-  const handleClearChat = () => {
-    clearChatHistory(character.id);
+  const handleClearChat = async () => {
+    await clearChatHistory(character.id);
     const initialMessage: Message = {
       id: Date.now().toString(),
       role: 'model',
@@ -135,16 +145,16 @@ export default function ChatInterface({ character }: { character: Character }) {
       timestamp: Date.now(),
     };
     setMessages([initialMessage]);
-    saveChatHistory(character.id, [initialMessage]);
+    await saveChatHistory(character.id, [initialMessage]);
     setShowMenu(false);
   };
 
-  const handleReaction = (messageId: string) => {
+  const handleReaction = async (messageId: string) => {
     const updatedMessages = messages.map(m => 
       m.id === messageId ? { ...m, reaction: m.reaction === '❤️' ? undefined : '❤️' } : m
     );
     setMessages(updatedMessages);
-    saveChatHistory(character.id, updatedMessages);
+    await saveChatHistory(character.id, updatedMessages);
   };
 
   const formatTime = (timestamp: number) => {

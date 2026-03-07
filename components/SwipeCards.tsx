@@ -15,9 +15,15 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
 
   const activeCharacter = characters[currentIndex];
 
-  const handleSwipe = (direction: 'left' | 'right') => {
+  const handleSwipe = async (direction: 'left' | 'right') => {
     if (direction === 'right' && activeCharacter) {
-      addMatch(activeCharacter.id);
+      const { auth } = await import('@/lib/auth');
+      const user = await auth.getCurrentUser();
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+      await addMatch(activeCharacter.id);
     }
     setCurrentIndex((prev) => (prev + 1) % characters.length);
   };

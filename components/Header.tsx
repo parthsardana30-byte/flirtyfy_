@@ -13,14 +13,15 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setUser(auth.getCurrentUser());
-    }, 0);
-    return () => clearTimeout(timeoutId);
+    const fetchUser = async () => {
+      const currentUser = await auth.getCurrentUser();
+      setUser(currentUser);
+    };
+    fetchUser();
   }, []);
 
-  const handleLogout = () => {
-    auth.logout();
+  const handleLogout = async () => {
+    await auth.logout();
     setUser(null);
     router.refresh();
   };

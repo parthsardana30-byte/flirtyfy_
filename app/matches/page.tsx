@@ -13,9 +13,18 @@ export default function MatchesPage() {
   const [matches, setMatches] = useState<Character[]>([]);
 
   useEffect(() => {
-    const matchIds = getMatches();
-    const matchedCharacters = characters.filter(c => matchIds.includes(c.id));
-    setMatches(matchedCharacters);
+    const fetchMatches = async () => {
+      const { auth } = await import('@/lib/auth');
+      const user = await auth.getCurrentUser();
+      if (!user) {
+        window.location.href = '/login';
+        return;
+      }
+      const matchIds = await getMatches();
+      const matchedCharacters = characters.filter(c => matchIds.includes(c.id));
+      setMatches(matchedCharacters);
+    };
+    fetchMatches();
   }, []);
 
   return (

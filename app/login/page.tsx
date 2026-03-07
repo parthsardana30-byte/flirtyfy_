@@ -26,14 +26,14 @@ function LoginContent() {
 
     let result;
     if (isLogin) {
-      result = auth.login(email, password);
+      result = await auth.login(email, password);
     } else {
       if (!name.trim()) {
         setError('Name is required');
         setIsLoading(false);
         return;
       }
-      result = auth.signup(name, email, password);
+      result = await auth.signup(name, email, password);
     }
 
     if (result.error) {
