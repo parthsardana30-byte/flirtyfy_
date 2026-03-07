@@ -1,17 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
 import Image from 'next/image';
 import { Character } from '@/lib/characters';
 import { Heart, X, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { addMatch } from '@/lib/storage';
+import { addMatch, getMatches } from '@/lib/storage';
 import Link from 'next/link';
 
 export default function SwipeCards({ characters }: { characters: Character[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [matchCount, setMatchCount] = useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchMatchCount = async () => {
+      const { auth } = await import('@/lib/auth');
+      const user = await auth.getCurrentUser();
+      if (user) {
+        const matches = await getMatches();
+        setMatchCount(matches.length);
+      }
+    };
+    fetchMatchCount();
+  }, []);
 
   const activeCharacter = characters[currentIndex];
 
@@ -24,6 +37,7 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
         return;
       }
       await addMatch(activeCharacter.id);
+      setMatchCount(prev => prev + 1);
     }
     setCurrentIndex((prev) => (prev + 1) % characters.length);
   };
@@ -43,38 +57,58 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
   }
 
   return (
-    <div className="relative w-full max-w-sm mx-auto h-[550px] flex items-center justify-center mt-4">
-      {/* Friends Button overlaying the card */}
-      <Link 
-        href="/matches" 
-        className="absolute top-4 left-4 z-50 flex items-center gap-2 bg-zinc-900/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-pink-500 hover:bg-zinc-800 transition-colors shadow-xl hover:scale-105 active:scale-95"
-      >
-        <Users className="w-5 h-5" />
-        <span className="font-medium text-sm">Friends</span>
-      </Link>
+    <div className="w-full max-w-5xl mx-auto mt-4 flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-16">
+      {/* Friends Button - Left Side on Desktop, Top on Mobile */}
+      <div className="flex justify-center md:justify-end order-2 md:order-1 w-full md:w-auto">
+        <Link 
+          href="/matches" 
+          className="flex flex-row md:flex-col items-center gap-3 md:gap-4 bg-zinc-900 border border-white/10 px-6 py-3 md:px-8 md:py-8 rounded-2xl text-pink-500 hover:bg-zinc-800 transition-all shadow-xl hover:scale-105 active:scale-95"
+        >
+          <div className="relative">
+            <Users className="w-6 h-6 md:w-10 md:h-10" />
+            {matchCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md">
+                {matchCount}
+              </span>
+            )}
+          </div>
+          <span className="font-bold text-lg md:text-xl tracking-wide">Friends</span>
+        </Link>
+      </div>
 
-      <AnimatePresence>
-        <Card 
-          key={activeCharacter.id}
-          character={activeCharacter}
-          onSwipe={handleSwipe}
-        />
-      </AnimatePresence>
+      {/* Swipe Card - Center */}
+      <div className="relative w-full max-w-sm h-[550px] flex items-center justify-center order-1 md:order-2 shrink-0">
+        <AnimatePresence>
+          <Card 
+            key={activeCharacter.id}
+            character={activeCharacter}
+            onSwipe={handleSwipe}
+          />
+        </AnimatePresence>
+        
+        {/* Controls */}
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-6 z-50 pointer-events-none">
+          <button 
+            onClick={() => handleSwipe('left')}
+            className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-red-500 hover:bg-zinc-800 transition-colors shadow-xl hover:scale-110 active:scale-95 pointer-events-auto"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <button 
+            onClick={() => handleSwipe('right')}
+            className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-green-500 hover:bg-zinc-800 transition-colors shadow-xl hover:scale-110 active:scale-95 pointer-events-auto"
+          >
+            <Heart className="w-8 h-8 fill-current" />
+          </button>
+        </div>
+      </div>
       
-      {/* Controls */}
-      <div className="absolute -bottom-24 left-0 right-0 flex justify-center gap-6">
-        <button 
-          onClick={() => handleSwipe('left')}
-          className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-red-500 hover:bg-zinc-800 transition-colors shadow-xl hover:scale-110 active:scale-95"
-        >
-          <X className="w-8 h-8" />
-        </button>
-        <button 
-          onClick={() => handleSwipe('right')}
-          className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-green-500 hover:bg-zinc-800 transition-colors shadow-xl hover:scale-110 active:scale-95"
-        >
-          <Heart className="w-8 h-8 fill-current" />
-        </button>
+      {/* Empty div for balance on desktop */}
+      <div className="hidden md:block order-3 w-full md:w-auto invisible">
+        <div className="px-8 py-8">
+          <Users className="w-10 h-10" />
+          <span>Friends</span>
+        </div>
       </div>
     </div>
   );
@@ -112,7 +146,7 @@ function Card({ character, onSwipe }: { character: Character, onSwipe: (dir: 'le
         src={character.avatar}
         alt={character.name}
         fill
-        className="object-cover object-[50%_20%] pointer-events-none"
+        className="object-cover object-top pointer-events-none"
         sizes="(max-width: 768px) 100vw, 400px"
         priority
         referrerPolicy="no-referrer"
@@ -134,7 +168,7 @@ function Card({ character, onSwipe }: { character: Character, onSwipe: (dir: 'le
         NOPE
       </motion.div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 p-6 pb-28 text-white pointer-events-none">
         <div className="flex items-end justify-between mb-2">
           <div>
             <h2 className="text-3xl font-bold flex items-center gap-2">
