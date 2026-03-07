@@ -37,7 +37,7 @@ export default function MatchesPage() {
             Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500">Friends</span>
           </h1>
           <p className="text-zinc-400">
-            People you've swiped right on. Start a conversation!
+            People you&apos;ve swiped right on. Start a conversation!
           </p>
         </div>
 
