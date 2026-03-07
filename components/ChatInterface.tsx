@@ -82,7 +82,8 @@ export default function ChatInterface({ character }: { character: Character }) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate response');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to generate response (${response.status})`);
       }
 
       if (!response.body) {
@@ -121,13 +122,13 @@ export default function ChatInterface({ character }: { character: Character }) {
         timestamp: Date.now(),
       }]);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate response:', error);
       // Add error message
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: 'model',
-        text: 'Sorry, I am having trouble connecting right now. Please try again later.',
+        text: `Error: ${error.message || 'I am having trouble connecting right now.'}`,
         timestamp: Date.now(),
       }]);
     } finally {
