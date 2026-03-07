@@ -20,7 +20,7 @@ export default async function ChatPage({ params }: { params: Promise<{ character
             src={character.avatar}
             alt={character.name}
             fill
-            className="object-cover object-top opacity-40"
+            className="object-cover object-[50%_20%] opacity-40"
             referrerPolicy="no-referrer"
             priority
           />

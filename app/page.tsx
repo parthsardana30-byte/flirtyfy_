@@ -36,7 +36,7 @@ export default function HomePage() {
                   alt={character.name}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover object-[50%_20%] transition-transform duration-700 group-hover:scale-105"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-zinc-950/60 backdrop-blur-md px-2 py-1 rounded-full border border-white/10">
