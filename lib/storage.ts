@@ -10,7 +10,12 @@ export interface Message {
 }
 
 const isSupabaseConfigured = () => {
-  return !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  return (
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL && 
+    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://placeholder.supabase.co' &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY !== 'placeholder'
+  );
 };
 
 export const getChatHistory = async (characterId: string): Promise<Message[]> => {
