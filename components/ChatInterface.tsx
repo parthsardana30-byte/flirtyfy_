@@ -52,9 +52,26 @@ export default function ChatInterface({ character }: { character: Character }) {
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
 
+    // Check chat limits for free users
+    const today = new Date().toDateString();
+    const chatCountKey = `chat_count_${today}`;
+    const currentCount = parseInt(localStorage.getItem(chatCountKey) || '0');
+    
+    // Assuming we don't have a real backend subscription check yet,
+    // we'll enforce the 10 chat limit locally for demonstration.
+    // In a real app, you'd check the user's subscription status from the database.
+    if (currentCount >= 10) {
+      alert('You have reached your free limit of 10 chats per day. Please upgrade to a premium plan to continue chatting.');
+      window.location.href = '/pricing';
+      return;
+    }
+
     const userText = input.trim();
     setInput('');
     
+    // Increment chat count
+    localStorage.setItem(chatCountKey, (currentCount + 1).toString());
+
     const newUserMessage: Message = {
       id: Date.now().toString(),
       role: 'user',

@@ -49,6 +49,12 @@ export default function Header() {
         <nav className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-4">
+              <Link 
+                href="/pricing"
+                className="text-sm font-bold bg-gradient-to-r from-amber-400 to-amber-600 text-black px-4 py-1.5 rounded-full hover:from-amber-300 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 flex items-center gap-1"
+              >
+                <span>✨ Premium</span>
+              </Link>
               <div className="flex items-center gap-2 text-sm font-medium text-zinc-300 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
                 <UserIcon className="w-4 h-4" />
                 <span>{user.name}</span>

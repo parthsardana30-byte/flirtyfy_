@@ -1,5 +1,4 @@
 import { characters } from '@/lib/characters';
-import { Users } from 'lucide-react';
 import Header from '@/components/Header';
 import SwipeCards from '@/components/SwipeCards';
 
@@ -22,14 +21,6 @@ export default function HomePage() {
         {/* Swipe Cards */}
         <SwipeCards characters={characters} />
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-6 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 text-center text-sm text-zinc-500 flex items-center justify-center gap-2">
-          <Users className="w-4 h-4" />
-          <span>Powered by DeepSeek API</span>
-        </div>
-      </footer>
     </div>
   );
 }
