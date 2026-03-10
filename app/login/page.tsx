@@ -9,7 +9,7 @@ import { Sparkles, ArrowLeft, Loader2 } from 'lucide-react';
 function LoginContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(() => searchParams.get('mode') !== 'signup');
+  const [isLogin, setIsLogin] = useState(() => searchParams?.get('mode') !== 'signup');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -22,7 +22,7 @@ export const getChatHistory = async (characterId: string): Promise<Message[]> =>
   const user = await auth.getCurrentUser();
   if (!user) return [];
 
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() && !user.id.startsWith('guest_')) {
     const { data, error } = await supabase
       .from('messages')
       .select('*')
@@ -46,7 +46,7 @@ export const saveChatHistory = async (characterId: string, messages: Message[]) 
   const user = await auth.getCurrentUser();
   if (!user) return;
 
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() && !user.id.startsWith('guest_')) {
     // Upsert messages
     const messagesToUpsert = messages.map(m => ({
       id: m.id,
@@ -71,7 +71,7 @@ export const clearChatHistory = async (characterId: string) => {
   const user = await auth.getCurrentUser();
   if (!user) return;
 
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() && !user.id.startsWith('guest_')) {
     const { error } = await supabase
       .from('messages')
       .delete()
@@ -90,7 +90,7 @@ export const getMatches = async (): Promise<string[]> => {
   const user = await auth.getCurrentUser();
   if (!user) return [];
 
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() && !user.id.startsWith('guest_')) {
     const { data, error } = await supabase
       .from('matches')
       .select('character_id')
@@ -112,7 +112,7 @@ export const addMatch = async (characterId: string) => {
   const user = await auth.getCurrentUser();
   if (!user) return;
 
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() && !user.id.startsWith('guest_')) {
     const { error } = await supabase
       .from('matches')
       .insert({ user_id: user.id, character_id: characterId })

@@ -47,7 +47,7 @@ export default function Header() {
           <span className="font-display font-bold text-xl tracking-tight text-white uppercase">FLIRTYFY</span>
         </Link>
         <nav className="flex items-center gap-4">
-          {user ? (
+          {user && !user.id.startsWith('guest_') ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm font-medium text-zinc-300 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
                 <UserIcon className="w-4 h-4" />

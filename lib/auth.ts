@@ -93,12 +93,22 @@ export const auth = {
           email: session.user.email!
         };
       }
-      return null;
     }
 
-    // Fallback to localStorage
+    // Fallback to localStorage or Guest
     if (typeof window === 'undefined') return null;
-    const user = localStorage.getItem('currentUser');
-    return user ? JSON.parse(user) : null;
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      return JSON.parse(userStr);
+    }
+    
+    // Create guest user if not logged in
+    const guestUser = {
+      id: 'guest_' + Date.now().toString(),
+      name: 'Guest',
+      email: 'guest@example.com'
+    };
+    localStorage.setItem('currentUser', JSON.stringify(guestUser));
+    return guestUser;
   }
 };
