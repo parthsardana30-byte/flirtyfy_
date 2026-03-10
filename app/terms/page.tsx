@@ -25,35 +25,28 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-white mb-4">3. Premium Subscriptions</h2>
-            <p>
-              We offer premium subscription plans (&quot;Premium&quot;) that unlock additional features. By subscribing, you agree to pay the recurring subscription fees. Subscriptions automatically renew unless canceled at least 24 hours before the end of the current billing period.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-white mb-4">4. Acceptable Use</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">3. Acceptable Use</h2>
             <p>
               You agree not to use the App for any unlawful purpose or in any way that violates these Terms. You are solely responsible for your interactions with the AI characters and must not generate or share content that is illegal, abusive, or harmful.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-white mb-4">5. Intellectual Property</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">4. Intellectual Property</h2>
             <p>
               All content, features, and functionality of the App, including but not limited to text, graphics, logos, and software, are the exclusive property of Flirtyfy and are protected by copyright and other intellectual property laws.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-white mb-4">6. Limitation of Liability</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">5. Limitation of Liability</h2>
             <p>
               Flirtyfy and its AI characters provide simulated conversations for entertainment purposes only. We are not liable for any emotional, psychological, or financial damages resulting from your use of the App.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-white mb-4">7. Contact Information</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">6. Contact Information</h2>
             <p>
               If you have any questions about these Terms, please contact us at <a href="mailto:support@flirtyfy.com" className="text-amber-400 hover:underline">support@flirtyfy.com</a>.
             </p>

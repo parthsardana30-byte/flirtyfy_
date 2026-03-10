@@ -12,6 +12,7 @@ import Link from 'next/link';
 export default function SwipeCards({ characters }: { characters: Character[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [matchCount, setMatchCount] = useState(0);
+  const [exitDirection, setExitDirection] = useState<'left' | 'right' | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,6 +30,17 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
   const activeCharacter = characters[currentIndex];
 
   const handleSwipe = async (direction: 'left' | 'right') => {
+    setExitDirection(direction);
+
+    // Ad Logic: Open ad link on every 6th swipe
+    const currentSwipeCount = parseInt(localStorage.getItem('ad_swipe_count') || '0');
+    const newSwipeCount = currentSwipeCount + 1;
+    localStorage.setItem('ad_swipe_count', newSwipeCount.toString());
+    
+    if (newSwipeCount % 6 === 0) {
+      window.open('https://omg10.com/4/10706419', '_blank'); // Replace with your actual ad link
+    }
+
     if (direction === 'right' && activeCharacter) {
       const { auth } = await import('@/lib/auth');
       const user = await auth.getCurrentUser();
@@ -56,6 +68,12 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
     );
   }
 
+  const visibleCharacters = [];
+  for (let i = 0; i < Math.min(3, characters.length); i++) {
+    visibleCharacters.push(characters[(currentIndex + i) % characters.length]);
+  }
+  const stackedCharacters = [...visibleCharacters].reverse();
+
   return (
     <div className="w-full max-w-sm mx-auto mt-4 flex flex-col items-center">
       {/* Friends Button - Above the card */}
@@ -77,13 +95,20 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
       </div>
 
       {/* Swipe Card - Center */}
-      <div className="relative w-full h-[550px] flex items-center justify-center shrink-0">
-        <AnimatePresence>
-          <Card 
-            key={activeCharacter.id}
-            character={activeCharacter}
-            onSwipe={handleSwipe}
-          />
+      <div className="relative w-full h-[550px] flex items-center justify-center shrink-0 perspective-1000">
+        <AnimatePresence custom={exitDirection}>
+          {stackedCharacters.map((character, i) => {
+            const indexInStack = stackedCharacters.length - 1 - i;
+            return (
+              <Card 
+                key={character.id}
+                character={character}
+                onSwipe={handleSwipe}
+                indexInStack={indexInStack}
+                custom={exitDirection}
+              />
+            );
+          })}
         </AnimatePresence>
         
         {/* Controls */}
@@ -106,10 +131,10 @@ export default function SwipeCards({ characters }: { characters: Character[] }) 
   );
 }
 
-function Card({ character, onSwipe }: { character: Character, onSwipe: (dir: 'left' | 'right') => void }) {
+function Card({ character, onSwipe, indexInStack, custom }: { character: Character, onSwipe: (dir: 'left' | 'right') => void, indexInStack: number, custom: 'left' | 'right' | null }) {
+  const isTop = indexInStack === 0;
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
-  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
   
   const nopeOpacity = useTransform(x, [-100, -50, 0], [1, 0, 0]);
   const likeOpacity = useTransform(x, [0, 50, 100], [0, 0, 1]);
@@ -122,16 +147,35 @@ function Card({ character, onSwipe }: { character: Character, onSwipe: (dir: 'le
     }
   };
 
+  const variants = {
+    exit: (customDirection: 'left' | 'right' | null) => ({
+      x: customDirection === 'left' ? -300 : customDirection === 'right' ? 300 : (x.get() > 0 ? 300 : -300),
+      opacity: 0,
+      scale: 0.9,
+      transition: { duration: 0.2 }
+    })
+  };
+
   return (
     <motion.div
-      className="absolute w-full h-full bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10 cursor-grab active:cursor-grabbing"
-      style={{ x, rotate, opacity }}
-      drag="x"
+      custom={custom}
+      variants={variants}
+      className={`absolute w-full h-full bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10 ${isTop ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      style={{ 
+        x: isTop ? x : 0, 
+        rotate: isTop ? rotate : 0, 
+        zIndex: 10 - indexInStack 
+      }}
+      drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
-      onDragEnd={handleDragEnd}
-      initial={{ scale: 0.95, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.95, opacity: 0 }}
+      onDragEnd={isTop ? handleDragEnd : undefined}
+      initial={{ scale: 0.8, opacity: 0, y: 40 }}
+      animate={{ 
+        scale: 1 - indexInStack * 0.05, 
+        y: indexInStack * 20,
+        opacity: isTop ? 1 : 1 - indexInStack * 0.2
+      }}
+      exit="exit"
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
       <Image
