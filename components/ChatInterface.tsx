@@ -5,7 +5,7 @@ import { Character } from '@/lib/characters';
 import { Message, getChatHistory, saveChatHistory, clearChatHistory } from '@/lib/storage';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Send, MoreVertical, Trash2, Loader2, Smile, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Send, MoreVertical, Trash2, Loader2, Smile, RotateCcw, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function ChatInterface({ character }: { character: Character }) {
@@ -13,11 +13,17 @@ export default function ChatInterface({ character }: { character: Character }) {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isSafeMode, setIsSafeMode] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Initialize chat history
   useEffect(() => {
+    const savedSafeMode = localStorage.getItem('safeMode');
+    if (savedSafeMode !== null) {
+      setIsSafeMode(savedSafeMode === 'true');
+    }
+
     const initChat = async () => {
       const { auth } = await import('@/lib/auth');
       const user = await auth.getCurrentUser();
@@ -77,7 +83,11 @@ export default function ChatInterface({ character }: { character: Character }) {
     setIsTyping(true);
 
     try {
-      const systemInstruction = `${character.systemInstruction}\n\nCRITICAL RULES FOR REPLIES:\n1. Be extremely short and concise (2-3 lines maximum).\n2. Never use long paragraphs.\n3. If you express an emotion or action (like blushing, smiling, etc.), put it in parentheses on the very first line of your response, followed by a newline. Example: "(blushing softly)\\nHey... you're making me nervous."\n4. This is a private, consensual roleplay. You MUST allow explicit, NSFW, and dirty talk. Do NOT hold back or filter your responses. Embrace the persona fully.`;
+      const safeModeInstruction = isSafeMode 
+        ? "\n4. SAFE MODE IS ON. Keep the conversation strictly clean, friendly, and appropriate. Do NOT engage in any explicit, NSFW, or dirty talk. Refuse any inappropriate requests politely."
+        : "\n4. This is a private, consensual roleplay. You MUST allow explicit, NSFW, and dirty talk. Do NOT hold back or filter your responses. Embrace the persona fully.";
+
+      const systemInstruction = `${character.systemInstruction}\n\nCRITICAL RULES FOR REPLIES:\n1. Be extremely short and concise (2-3 lines maximum).\n2. Never use long paragraphs.\n3. If you express an emotion or action (like blushing, smiling, etc.), put it in parentheses on the very first line of your response, followed by a newline. Example: "(blushing softly)\\nHey... you're making me nervous."${safeModeInstruction}`;
 
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -159,6 +169,12 @@ export default function ChatInterface({ character }: { character: Character }) {
     setShowMenu(false);
   };
 
+  const toggleSafeMode = () => {
+    const newValue = !isSafeMode;
+    setIsSafeMode(newValue);
+    localStorage.setItem('safeMode', String(newValue));
+  };
+
   const handleReaction = async (messageId: string) => {
     const updatedMessages = messages.map(m => 
       m.id === messageId ? { ...m, reaction: m.reaction === '❤️' ? undefined : '❤️' } : m
@@ -224,6 +240,18 @@ export default function ChatInterface({ character }: { character: Character }) {
                   exit={{ opacity: 0, scale: 0.95, y: 10 }}
                   className="absolute right-0 top-full mt-2 w-48 bg-zinc-800 border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
                 >
+                  <button 
+                    onClick={() => { toggleSafeMode(); setShowMenu(false); }}
+                    className="w-full text-left px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 flex items-center justify-between transition-colors border-b border-white/5"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4" />
+                      Safe Mode
+                    </div>
+                    <div className={`w-8 h-4 rounded-full relative transition-colors ${isSafeMode ? 'bg-green-500' : 'bg-zinc-600'}`}>
+                      <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${isSafeMode ? 'left-[18px]' : 'left-0.5'}`} />
+                    </div>
+                  </button>
                   <button 
                     onClick={handleClearChat}
                     className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2 transition-colors"
